@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cake Shop Management</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Cake Shop Management</h1>
+    <p>Welcome to our delightful cake shop! Manage cakes, orders, customers, and more!</p>
+  </header>
+
+  <section id="cakes">
+    <h2>Our Cakes</h2>
+    <div class="cake-list">
+      <!-- Cake items -->
+      <div class="cake-item" data-cake="Choco Truffle Cake" data-price="650">
+        <!-- MODIFIED: Using local image path -->
+        <img src="assets/Choco Truffle Cake.jpg" alt="Choco Truffle Cake"  onerror="this.onerror=null; this.src='https://placehold.co/200x200/5C2E1E/FFF?text=Choco+Truffle';">
+        <p>Choco Truffle Cake (1kg) - ₹650</p>
+        <button onclick="addCake('Choco Truffle Cake', 650)">Add to Cart</button>
+        <input type="number" value="1" min="1" class="quantity-input" onchange="updateQuantity('Choco Truffle Cake', this.value)">
+      </div>
+      <div class="cake-item" data-cake="Fudgy Brownies" data-price="250">
+        <!-- MODIFIED: Using local image path -->
+        <img src="assets/Fudgy Brownies.jpg" alt="Fudgy Brownies" onerror="this.onerror=null; this.src='https://placehold.co/200x200/6B4226/FFF?text=Fudgy+Brownies';">
+        <p>Fudgy Brownies (100g) - ₹250</p>
+        <button onclick="addCake('Fudgy Brownies', 250)">Add to Cart</button>
+        <input type="number" value="1" min="1" class="quantity-input" onchange="updateQuantity('Fudgy Brownies', this.value)">
+      </div>
+      <div class="cake-item" data-cake="Red Velvet Cake" data-price="500">
+        <!-- MODIFIED: Using local image path -->
+        <img src="assets/Red Velvet Cake.jpg" alt="Red Velvet Cake" onerror="this.onerror=null; this.src='https://placehold.co/200x200/9B2C2C/FFF?text=Red+Velvet';">
+        <p>Red Velvet Cake (1kg) - ₹500</p>
+        <button onclick="addCake('Red Velvet Cake', 500)">Add to Cart</button>
+        <input type="number" value="1" min="1" class="quantity-input" onchange="updateQuantity('Red Velvet Cake', this.value)">
+      </div>
+    </div>
+  </section>
+
+  <section id="cart" class="hidden">
+    <h2>Items in Your Cart</h2>
+    <table id="cart-items"></table>
+    <div id="cart-total"></div>
+    <button onclick="goToCheckout()">Proceed to Checkout</button>
+  </section>
+
+  <!-- ================================== -->
+  <!-- ===== NEW CHECKOUT SECTION ===== -->
+  <!-- ================================== -->
+  <section id="checkout" class="hidden">
+    <h2>Checkout</h2>
+    
+    <!-- Step 1: Address Selection -->
+    <div id="address-step">
+      <h3>1. Select Delivery Address</h3>
+      <div class="address-box default-address">
+        <p><strong>Default Address:</strong></p>
+        <p>Justin M. Tabb</p>
+        <p>1017 Rosemont Avenue</p>
+        <p>Orlando, FL 32801</p>
+        <p>Contact: 555-123-4567</p>
+        <button id="use-default-address-btn">Use Default Address</button>
+      </div>
+      <button id="show-new-address-btn" class="secondary-btn">Add New Address</button>
+
+      <div id="new-address-form" class="hidden">
+        <h3>Enter New Address</h3>
+        <table>
+          <tr><td>Name:</td><td><input type="text" id="name" required></td></tr>
+          <tr><td>Address:</td><td><input type="text" id="address" required></td></tr>
+          <tr><td>Contact Number:</td><td><input type="text" id="contact" required></td></tr>
+          <tr><td>Message:</td><td><textarea id="message"></textarea></td></tr>
+        </table>
+        <button id="use-new-address-btn">Use This Address</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Payment Selection (hidden by default) -->
+    <div id="payment-step" class="hidden">
+      <h3>2. Select Payment Method</h3>
+      <div class="payment-options">
+        <label><input type="radio" name="payment" value="COD" checked> Cash on Delivery (Dummy)</label>
+        <label><input type="radio" name="payment" value="UPI"> UPI (Dummy)</label>
+        <label><input type="radio" name="payment" value="ETH"> Pay with ETH (Sepolia Testnet)</label>
+      </div>
+      <button onclick="confirmOrder()">Confirm Order</button>
+      <button onclick="backToAddress()" class="secondary-btn">Back to Address</button>
+    </div>
+  </section>
+
+  <!-- ================================== -->
+  <!-- ===== NEW ETH PAYMENT MODAL ===== -->
+  <!-- ================================== -->
+  <div id="eth-payment-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeEthModal()">&times;</span>
+      <h2>ETH Payment (Sepolia Testnet)</h2>
+      <div class="eth-details">
+        <p>Total Amount:</p>
+        <h3 id="eth-amount">Calculating...</h3>
+        <p>(Price: 1 ETH = ₹<span id="eth-price">...</span>)</p>
+      </div>
+      <div class="eth-form">
+        <label for="user-private-key">Enter your Testnet Private Key:</label>
+        <div class="warning-box">
+          <strong>WARNING:</strong> SIMULATION ONLY.
+          Never use a real private key. Use a burner wallet funded with Sepolia test ETH.
+        </div>
+        <input type="password" id="user-private-key" placeholder="0x...">
+        <button id="pay-now-button" onclick="handleEthPayment()">Pay Now</button>
+      </div>
+      <div id="simulation-log-container">
+        <h3>Simulation Log:</h3>
+        <pre id="simulation-log">Waiting for payment...</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <section id="confirmation" class="hidden">
+    <h2>Thank You for Your Order!</h2>
+    <div id="confirmation-details">
+        <!-- Details will be injected by JS -->
+    </div>
+    <button onclick="backToCakes()">Back to Cakes</button>
+  </section>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
+
