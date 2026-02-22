@@ -1,0 +1,2 @@
+# Decentralized-Retail-Payment-Simulation---Blockchain
+A Decentralized Retail Payment Simulation bridging traditional retail and blockchain. Using Python and Web3.py, it deploys Solidity contracts to Sepolia. Features a Node.js bridge for MetaMask, CoinGecko API for fiat-to-ETH conversion, and Etherscan for validation. It ensures secure, real-time purchase simulation with a transparent audit trail.
